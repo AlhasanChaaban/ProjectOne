@@ -42,7 +42,7 @@ class GameHomePage extends StatelessWidget {
             children: <Widget>[
               ElevatedButton(
                 onPressed: () {
-                  // Navigate to start game screen
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => GameScreen()));
                 },
                 child: const Text('Start Game'),
               ),
