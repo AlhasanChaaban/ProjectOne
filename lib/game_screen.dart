@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'settings_screen.dart';
-
+import 'package:audioplayers/audioplayers.dart';
 
 class GameScreen extends StatefulWidget {
   final Color themeColor;
@@ -14,7 +13,6 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-
   int score = 0;
   Random random = Random();
 
@@ -27,10 +25,19 @@ class _GameScreenState extends State<GameScreen> {
 
   bool isGameOver = false;
 
+  late AudioPlayer _gameStartAudioPlayer;
+  late AudioPlayer _popAudioPlayer;
+
   @override
   void initState() {
     super.initState();
+    _gameStartAudioPlayer = AudioPlayer();
+    _popAudioPlayer = AudioPlayer();
     startTimer();
+  }
+
+  void _playGameStartSound() async {
+    await _gameStartAudioPlayer.play('assets/audio/gamestart.mp3', isLocal: true);
   }
 
   void startTimer() {
@@ -52,7 +59,7 @@ class _GameScreenState extends State<GameScreen> {
     });
     showDialog(
       context: context,
-      barrierDismissible: false, // Set to false to prevent closing on outside tap
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Game Over'),
@@ -60,8 +67,8 @@ class _GameScreenState extends State<GameScreen> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                resetGame(); // Restart the game
+                Navigator.of(context).pop();
+                resetGame();
               },
               child: const Text('Try Again'),
             ),
@@ -76,8 +83,12 @@ class _GameScreenState extends State<GameScreen> {
       score = 0;
       timerSeconds = 30;
       isGameOver = false;
-      startTimer(); // Restart the timer
+      startTimer();
     });
+  }
+
+  void _playPopSound() async {
+    await _popAudioPlayer.play('assets/audio/pop.mp3', isLocal: true);
   }
 
   @override
@@ -93,38 +104,37 @@ class _GameScreenState extends State<GameScreen> {
           if (isGameOver) {
             return;
           }
+
+          _playPopSound();
+
+          setState(() {
+            score++;
+            circlePositionX = random.nextDouble() * 2 - 1;
+            circlePositionY = random.nextDouble() * 2 - 1;
+
+            if (score == 1) {
+              _playGameStartSound();
+            }
+          });
         },
         child: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/background.jpg"),
+              image: AssetImage("assets/images/background.jpg"),
               fit: BoxFit.cover,
             ),
           ),
           child: Stack(
             children: <Widget>[
               Positioned(
-                child: GestureDetector(
-                  onTap: () {
-                    if (isGameOver) {
-                      return;
-                    }
-                    setState(() {
-                      score++;
-                      // Set new random position
-                      circlePositionX = random.nextDouble() * 2 - 1;
-                      circlePositionY = random.nextDouble() * 2 - 1;
-                    });
-                  },
+                child: Container(
+                  alignment: Alignment(circlePositionX, circlePositionY),
                   child: Container(
-                    alignment: Alignment(circlePositionX, circlePositionY),
-                    child: Container(
-                      width: circleSize,
-                      height: circleSize,
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
+                    width: circleSize,
+                    height: circleSize,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
                     ),
                   ),
                 ),
@@ -138,7 +148,9 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
-    timer.cancel(); // Dispose the timer when the widget is disposed to avoid memory leaks
+    _gameStartAudioPlayer.dispose();
+    _popAudioPlayer.dispose();
+    timer.cancel();
     super.dispose();
   }
 }

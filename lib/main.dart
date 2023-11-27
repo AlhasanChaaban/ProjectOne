@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'game_screen.dart';
 import 'settings_screen.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(ClickCircleGame());
@@ -27,6 +28,23 @@ class GameHomePage extends StatefulWidget {
 
 class _GameHomePageState extends State<GameHomePage> {
   Color appThemeColor = Colors.blue;
+  late AudioPlayer _backgroundAudioPlayer;
+
+  @override
+  void initState() {
+    super.initState();
+    _backgroundAudioPlayer = AudioPlayer();
+    _playBackgroundMusic();
+  }
+
+  void _playBackgroundMusic() async {
+    await _backgroundAudioPlayer.play('assets/audio/background.mp3', isLocal: true);
+    _backgroundAudioPlayer.setReleaseMode(ReleaseMode.LOOP);
+  }
+
+  void _stopBackgroundMusic() async {
+    await _backgroundAudioPlayer.stop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +62,7 @@ class _GameHomePageState extends State<GameHomePage> {
         body: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage("assets/background.jpg"),
+              image: AssetImage("assets/images/background.jpg"),
               fit: BoxFit.cover,
             ),
           ),
@@ -54,13 +72,14 @@ class _GameHomePageState extends State<GameHomePage> {
               children: <Widget>[
                 ElevatedButton(
                   onPressed: () {
+                    _stopBackgroundMusic(); // Stop background music
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => GameScreen(themeColor: appThemeColor,)),
+                      MaterialPageRoute(builder: (context) => GameScreen(themeColor: appThemeColor)),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: appThemeColor, // Set the button color dynamically
+                    primary: appThemeColor,
                   ),
                   child: const Text('Start Game'),
                 ),
@@ -79,7 +98,7 @@ class _GameHomePageState extends State<GameHomePage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: appThemeColor, // Set the button color dynamically
+                    primary: appThemeColor,
                   ),
                   child: const Text('Settings'),
                 ),
@@ -89,6 +108,12 @@ class _GameHomePageState extends State<GameHomePage> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _backgroundAudioPlayer.dispose();
+    super.dispose();
   }
 }
 
