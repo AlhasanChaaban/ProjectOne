@@ -32,7 +32,6 @@ class GameHomePage extends StatelessWidget {
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/background.jpg"),
-            // Replace with your image path
             fit: BoxFit.cover,
           ),
         ),
@@ -49,7 +48,6 @@ class GameHomePage extends StatelessWidget {
               const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
-                  // Navigate to settings screen
                 },
                 child: const Text('Settings'),
               ),
