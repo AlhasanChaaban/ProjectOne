@@ -18,7 +18,8 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Game Screen'),
+        title: Text('Score: $score'),
+        centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -30,35 +31,28 @@ class _GameScreenState extends State<GameScreen> {
         child: Stack(
           children: <Widget>[
             Positioned(
-              left: circlePositionX,
-              top: circlePositionY,
               child: GestureDetector(
                 onTap: () {
                   setState(() {
                     score++;
                     // Set new random position
-                    circlePositionX = random.nextDouble() * 350;
-                    circlePositionY = random.nextDouble() * 500;
+                    circlePositionX = random.nextDouble() * 2 -1;
+                    circlePositionY = random.nextDouble() * 2 -1;
                   });
                 },
                 child: Container(
-                  width: circleSize,
-                  height: circleSize,
-                  decoration: const BoxDecoration(
-                    color: Colors.blue,
-                    shape: BoxShape.circle,
+                  alignment: Alignment(circlePositionX,circlePositionY),
+                  child: Container(
+                    width: circleSize,
+                    height: circleSize,
+                    decoration: const BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
+                ),
               ),
-            ),
-            Positioned(
-              top: 0,
-              left: MediaQuery.of(context).size.width * 0.5 - 50,
-              child: Text(
-                'Score: $score',
-                style: const TextStyle(fontSize: 24, color: Colors.white),
-              ),
-            ),
           ],
         ),
       ),
