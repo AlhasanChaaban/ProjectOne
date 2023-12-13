@@ -33,7 +33,6 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     _gameStartAudioPlayer = AudioPlayer();
     _popAudioPlayer = AudioPlayer();
-    startTimer();
   }
 
   void _playGameStartSound() async {
@@ -83,7 +82,6 @@ class _GameScreenState extends State<GameScreen> {
       score = 0;
       timerSeconds = 30;
       isGameOver = false;
-      startTimer();
     });
   }
 
@@ -99,25 +97,7 @@ class _GameScreenState extends State<GameScreen> {
         centerTitle: true,
         backgroundColor: createMaterialColor(widget.themeColor),
       ),
-      body: GestureDetector(
-        onTap: () {
-          if (isGameOver) {
-            return;
-          }
-
-          _playPopSound();
-
-          setState(() {
-            score++;
-            circlePositionX = random.nextDouble() * 2 - 1;
-            circlePositionY = random.nextDouble() * 2 - 1;
-
-            if (score == 1) {
-              _playGameStartSound();
-            }
-          });
-        },
-        child: Container(
+      body: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage("assets/images/background.jpg"),
@@ -136,13 +116,32 @@ class _GameScreenState extends State<GameScreen> {
                       color: Colors.white,
                       shape: BoxShape.circle,
                     ),
+                    child: InkWell(
+                      onTap: () {
+                        if (isGameOver) {
+                          return;
+                        }
+
+                        _playPopSound();
+
+                        setState(() {
+                          score++;
+                          circlePositionX = random.nextDouble() * 2 - 1;
+                          circlePositionY = random.nextDouble() * 2 - 1;
+
+                          if (score == 1) {
+                            _playGameStartSound();
+                            startTimer();
+                          }
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
             ],
           ),
         ),
-      ),
     );
   }
 
